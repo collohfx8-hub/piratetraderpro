@@ -10,7 +10,6 @@ import { observer as globalObserver } from '../../utils/observer';
 import { removeLimitedBlocks } from '../../utils/workspace';
 import BlockConversion from '../backward-compatibility';
 import DBotStore from '../dbot-store';
-import { saveAs } from '../shared';
 
 export const inject_workspace_options = {
     // Getter (not a literal) so the public-path prefix is read when the options are spread
@@ -135,8 +134,7 @@ export const save = (filename = '@deriv/bot', collection = false, xmlDom) => {
     xmlDom.setAttribute('is_dbot', 'true');
     xmlDom.setAttribute('collection', collection ? 'true' : 'false');
 
-    const data = window.Blockly.Xml.domToPrettyText(xmlDom);
-    saveAs({ data, type: 'text/xml;charset=utf-8', filename: `${filename}.xml` });
+    // Bot downloads are disabled on this site; strategies stay in the browser workspace only.
 };
 
 const delayExecution = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -637,18 +635,6 @@ export const removeExtraInput = instance => {
     }
 };
 
-const downloadBlock = () => {
-    const xml_block = window.Blockly?.getSelected()?.svgGroup_;
-    const xml_text = window.Blockly.Xml.domToPrettyText(xml_block);
-    saveAs({ data: xml_text, type: 'text/xml;charset=utf-8', filename: 'block.xml' });
-};
-
-const download_option = () => ({
-    text: localize('Download Block'),
-    enabled: true,
-    callback: downloadBlock,
-});
-
 export const excludeOptionFromContextMenu = (menu, exclude_items) => {
     for (let i = 0; i <= menu.length - 1; i++) {
         const menu_text = localize(menu[i].text);
@@ -675,7 +661,8 @@ const deleteBlocksLocaleText = () => localize('Delete Block');
 const deleteAllBlocksLocaleText = () => localize('Delete All Blocks');
 
 export const modifyContextMenu = (menu, add_new_items = []) => {
-    const common_included_items = [download_option()];
+    // Block downloads are disabled on this site.
+    const common_included_items = [];
     const include_items = [...common_included_items, ...add_new_items];
     include_items.forEach(item => {
         menu.push({
