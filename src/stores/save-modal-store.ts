@@ -7,7 +7,6 @@ import { button_status } from '@/constants/button-status';
 import {
     getSavedWorkspaces,
     observer as globalObserver,
-    save,
     save_types,
     saveWorkspaceToRecent,
 } from '@/external/bot-skeleton';
@@ -151,9 +150,8 @@ export default class SaveModalStore implements ISaveModalStore {
         xml.setAttribute('is_dbot', 'true');
         xml.setAttribute('collection', save_as_collection ? 'true' : 'false');
 
-        if (is_local) {
-            save(bot_name, save_as_collection, xml);
-        } else {
+        // Downloading bots to the local computer is disabled on this site.
+        if (!is_local) {
             await saveFile({
                 name: bot_name,
                 content: window.Blockly?.Xml?.domToPrettyText(xml),
